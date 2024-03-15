@@ -1,66 +1,53 @@
-from fomate import tabulate
-Proseses = int(input('processes : '))
-resourse = int(input('resourse : '))
-table = [[0]*5 for _ in range(Proseses)]
+def system_in_safe(allocation, max, available):
+    process_number = len(allocation)
+    resources = len(available)
+    sequence = []
+    work = available
+    need = [[0]*resources for _ in range(process_number)]
+    finsh = [False]*process_number
+    for i in range(process_number):
+        for j in range(resources):
+            need[i][j] = max[i][j] - allocation[i][j]
+    PasibaleSafeSequence = True
+    while not all(finsh) and PasibaleSafeSequence:
+        PasibaleSafeSequence = False
+        for i in range(process_number):
+            needLessThenWork = [False]*resources
+            for j in range(resources):
+                if need[i][j] <= work[j]:
+                    needLessThenWork[j] = True
+                else:
+                    break
+            if all(needLessThenWork) and not finsh[i]:
+                print(work)
+                for j in range(resources):
+                    work[j] += allocation[i][j]
+                finsh[i] = True
+                sequence.append(f'P{i}')
+                PasibaleSafeSequence = True
 
-waiting = []
-sequence = []
-need = []
-for i in range(5):
-    for j in range(Proseses):
-        if i == 0:
-            table[j][i] = input(f'prosess {j} : ')
-        elif i == 1:
-            table[j][i] = input(f'allccation {j} : ')
-        elif i == 2:
-            table[j][i] = input(f'max {j} : ')
-        elif i == 3 and j == 0:
-            table[j][i] = input(f'available {j}: ')
-        elif i == 4:
-            # calculate need
-            table[j][i] = ''
-            for res in range(resourse):
-                table[j][i] += str(int(table[j][2][res]) -
-                                   int(table[j][1][res]))
-            need.append(table[j][i])
-
-# check if in safe sequence
-
-currnt_value = table[0][3]
-# i=0;
-# while need and waiting:
-#     LessThenCurrntValue = False
-#     for res in range(resourse):
-#         if table[i][4][res] <= currnt_value[res]:
-#             LessThenCurrntValue = True
-#         else:
-#             LessThenCurrntValue = False
-#             waiting.append(i)
-#             break
-#     if LessThenCurrntValue:
-#         table[i][3] = ''
-#         for res in range(resourse):
-#             table[i][3] += str(int(currnt_value[res])+int(table[i][1][res]))
-#         currnt_value = table[i][3]
-#         sequence.append(table[i][0])
-i = 0
-while i < Proseses or waiting:
-    LessThenCurrntValue = False
-    for res in range(resourse):
-        if table[i][4][res] <= currnt_value[res]:
-            LessThenCurrntValue = True
-        else:
-            LessThenCurrntValue = False
-            waiting.append(i)
-            break
-    if LessThenCurrntValue:
-        table[i][3] = ''
-        for res in range(resourse):
-            table[i][3] += str(int(currnt_value[res])+int(table[i][1][res]))
-        currnt_value = table[i][3]
-        sequence.append(table[i][0])
-    i += 1
+    if all(finsh):
+        print("The system is in a safe state with the sequence ", sequence)
+    else:
+        print("The system is Not in a safe state ")
 
 
-for i in table:
-    print(i)
+Allocation = [
+    [0,1,0],
+    [2,0,0],
+    [3,0,2],
+    [2,1,1],
+    [0,2,2]
+]
+
+Max = [
+    [7,5,3],
+    [3,2,2],
+    [9,0,2],
+    [2,2,2],
+    [4,3,3],
+]
+
+Available = [3,3,2]
+
+system_in_safe(Allocation, Max, Available)
